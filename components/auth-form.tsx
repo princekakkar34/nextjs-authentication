@@ -27,7 +27,7 @@ export default function AuthForm({ mode }: { mode: string }) {
         </ul>
       )}
       <p>
-        <button type="submit">
+        <button type="submit" data-testid={mode === 'login' ? 'login-submit' : 'create-account-submit'}>
           {mode === 'login' ? 'Login' : 'Create Account'}
         </button>
       </p>

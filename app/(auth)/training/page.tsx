@@ -5,6 +5,7 @@ import { getTrainings } from '@/lib/training';
 
 export default async function TrainingPage() {
   const result = await verifyAuth();
+  console.log('TrainingPage result:-----------------------------------------', result);
 
   if (!result.user) {
     return redirect('/');
