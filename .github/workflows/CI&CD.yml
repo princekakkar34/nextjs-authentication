@@ -1,7 +1,7 @@
 name: Deployment with separate jobs
 on: push
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -10,21 +10,13 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Run ESLint
         run: yarn lint
-  test: 
-    needs: lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
       - name: Run tests
         run: yarn test:run
-  deploy:
+  build: 
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Get code
         uses: actions/checkout@v6
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -33,11 +25,21 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: build-artifacts
+          name: nextjs-build-artifacts
           include-hidden-files: true
           path: |
             .next
             public
             package.json
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: nextjs-build-artifacts
+      - name: Output contents
+        run: ls     
       - name: Deploy code
         run: echo "Deploying code..." # Replace this with your actual deployment command
