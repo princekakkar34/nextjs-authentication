@@ -1,7 +1,7 @@
-name: Deployment Workflow
+name: Deployment with separate jobs
 on: push
 jobs:
-  deploy:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -10,9 +10,34 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Run ESLint
         run: yarn lint
+  test: 
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
       - name: Run tests
         run: yarn test:run
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
       - name: Build project
         run: yarn build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          include-hidden-files: true
+          path: |
+            .next
+            public
+            package.json
       - name: Deploy code
         run: echo "Deploying code..." # Replace this with your actual deployment command
