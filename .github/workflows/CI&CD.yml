@@ -40,6 +40,6 @@ jobs:
         with:
           name: nextjs-build-artifacts
       - name: Output contents
-        run: ls     
+        run: ls -la
       - name: Deploy code
         run: echo "Deploying code..." # Replace this with your actual deployment command
