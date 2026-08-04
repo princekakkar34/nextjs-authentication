@@ -15,6 +15,8 @@ jobs:
   build: 
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      script-file-in-job: ${{ steps.jsfile.outputs.script-file-in-step }} 
     steps:
       - name: Get code
         uses: actions/checkout@v6
@@ -22,6 +24,9 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Build project
         run: yarn build
+      - name: Publish JS filename
+        id: jsfile
+        run: find .next/*.js -type f -execdir echo 'script-file-in-step={}' >> $GITHUB_OUTPUT ';'
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -41,5 +46,7 @@ jobs:
           name: nextjs-build-artifacts
       - name: Output contents
         run: ls -la
+      - name: Output Js filename
+        run: echo "{{ needs.build.outputs.script-file-in-job }}"
       - name: Deploy code
         run: echo "Deploying code..." # Replace this with your actual deployment command
