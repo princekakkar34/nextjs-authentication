@@ -47,6 +47,6 @@ jobs:
       - name: Output contents
         run: ls -la
       - name: Output Js filename
-        run: echo "{{ needs.build.outputs.script-file-in-job }}"
+        run: echo "${{ needs.build.outputs.script-file-in-job }}"
       - name: Deploy code
         run: echo "Deploying code..." # Replace this with your actual deployment command
