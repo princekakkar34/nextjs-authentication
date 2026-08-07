@@ -10,13 +10,13 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Run ESLint
         run: yarn lint
-      - name: Run tests
-        run: yarn test:run
-  build: 
+      - name: Force test failure
+        run: exit 1
+  build:
     needs: test
     runs-on: ubuntu-latest
     outputs:
-      script-file-in-job: ${{ steps.jsfile.outputs.script-file-in-step }} 
+      script-file-in-job: ${{ steps.jsfile.outputs.script-file-in-step }}
     steps:
       - name: Get code
         uses: actions/checkout@v6
@@ -26,7 +26,8 @@ jobs:
         run: yarn build
       - name: Publish JS filename
         id: jsfile
-        run: find .next/*.js -type f -execdir echo 'script-file-in-step={}' >> $GITHUB_OUTPUT ';'
+        run: |
+          find .next/*.js -type f -execdir echo 'script-file-in-step={}' >> "$GITHUB_OUTPUT" ';'
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -46,16 +47,18 @@ jobs:
           name: nextjs-build-artifacts
       - name: Output contents
         run: ls -la
-      - name: Output Js filename
+      - name: Output JS filename
         run: echo "${{ needs.build.outputs.script-file-in-job }}"
       - name: Deploy code
-        run: echo "Deploying code..." # Replace this with your actual deployment command
-  report: 
-    needs: [test, deploy]
-    if: failure()
+        run: echo "Deploying code..."
+  report:
+    needs: [test, build, deploy]
+    if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
       - name: Output information
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: |
           echo "Running report job when previous job failed"
-          echo "${{ toJSON(github) }}" 
+          echo "$GITHUB_CONTEXT"
