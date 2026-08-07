@@ -50,3 +50,11 @@ jobs:
         run: echo "${{ needs.build.outputs.script-file-in-job }}"
       - name: Deploy code
         run: echo "Deploying code..." # Replace this with your actual deployment command
+  report: 
+    needs: [lint, deploy]
+    if: failure()
+    steps:
+      - name: Output information
+        run: |
+          echo "Running report job when previous job failed"
+          echo "${{ toJSON(github) }}" 
