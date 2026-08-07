@@ -51,8 +51,9 @@ jobs:
       - name: Deploy code
         run: echo "Deploying code..." # Replace this with your actual deployment command
   report: 
-    needs: [lint, deploy]
+    needs: [test, deploy]
     if: failure()
+    runs-on: ubuntu-latest
     steps:
       - name: Output information
         run: |

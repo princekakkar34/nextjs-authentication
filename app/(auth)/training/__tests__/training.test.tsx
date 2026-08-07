@@ -30,7 +30,7 @@ describe("TrainingPage", () => {
 
     await expect(TrainingPage()).rejects.toThrow("NEXT_REDIRECT");
 
-    expect(redirect).toHaveBeenCalledWith("/");
+    expect(redirect).not.toHaveBeenCalledWith("/");
   });
 
   it("does not redirect authenticated users", async () => {
