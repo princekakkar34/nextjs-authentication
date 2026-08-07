@@ -6,7 +6,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+      - name: Cache dependencies
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: Run ESLint
         run: yarn lint
@@ -20,7 +29,16 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v6
+      - name: Cache dependencies
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: Build project
         run: yarn build
@@ -47,7 +65,7 @@ jobs:
           name: nextjs-build-artifacts
       - name: Output contents
         run: ls -la
-      - name: Output Js filename
+      - name: Output JS filename
         run: echo "${{ needs.build.outputs.script-file-in-job }}"
       - name: Deploy code
         run: echo "Deploying code..."
