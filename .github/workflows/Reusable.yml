@@ -1,0 +1,32 @@
+name: Reusable Deploy
+on:
+  workflow_call:
+    inputs:
+      artifact-name-input:
+        description: The name of the deployable files
+        required: false
+        default: dist
+        type: string
+    outputs:
+      result-output:
+        description: The result of the deployment operation
+        value: ${{ jobs.deploy_reusable.outputs.outcome }}
+jobs:
+  deploy_reusable:
+    outputs:
+      outcome: ${{ steps.output-message.outputs.output-message-key }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get code
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ inputs.artifact-name-input }}
+    - name: List files
+      run: ls -la
+    - name: Output information
+      run: echo "Deploying and Uploading..."
+    - name: Set result output
+      id: output-message
+      run: echo "output-message-key=this is success output message from reusable deployment job" >> "$GITHUB_OUTPUT"
+
+

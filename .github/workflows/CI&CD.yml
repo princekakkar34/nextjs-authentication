@@ -69,6 +69,17 @@ jobs:
         run: echo "${{ needs.build.outputs.script-file-in-job }}"
       - name: Deploy code
         run: echo "Deploying code..."
+  reusable_input:
+    needs: deploy
+    uses: ./.github/workflows/Reusable.yml
+    with:
+      artifact-name-input: nextjs-build-artifacts
+  reusable_output:
+    needs: reusable_input
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print reusable workflow output
+        run: echo "${{ needs.reusable_input.outputs.result-output }}"
   report:
     needs: [test, build, deploy]
     if: ${{ failure() }}
