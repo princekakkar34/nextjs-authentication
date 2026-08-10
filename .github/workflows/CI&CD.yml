@@ -8,6 +8,8 @@ jobs:
         uses: actions/checkout@v6
       - name: Load & cache dependencies (via composite custom action)
         uses: ./.github/actions/cached-deps
+        with:
+          caching: 'false'
       - name: Run ESLint
         run: yarn lint
       - name: Run tests
