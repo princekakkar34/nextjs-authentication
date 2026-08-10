@@ -7,9 +7,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Load & cache dependencies (via composite custom action)
+        id: test-cache-deps
         uses: ./.github/actions/cached-deps
         with:
           caching: 'false'
+      - name: Output custom composite action
+        run: echo "Cache used? ${{ steps.test-cache-deps.outputs.used-cache }}"
       - name: Run ESLint
         run: yarn lint
       - name: Run tests

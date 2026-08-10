@@ -5,6 +5,10 @@ inputs:
     description: 'Whether to cache dependencies or not.'
     required: false
     default: true
+outputs:
+  used-cache:
+    description: 'Whether the cache was used.'
+    value: 
 runs:
   using: 'composite'
   steps:
@@ -18,6 +22,9 @@ runs:
         restore-keys: |
           ${{ runner.os }}-yarn-
     - name: Install dependencies
+      id: installation-deps
       if: steps.cache-node-modules.outputs.cache-hit != 'true' || inputs.caching != 'true'
-      run: yarn install --frozen-lockfile
+      run: |
+        yarn install --frozen-lockfile
+        echo "is-cache-used=${{ inputs.caching }}" >> $GITHUB_OUTPUT
       shell: bash
